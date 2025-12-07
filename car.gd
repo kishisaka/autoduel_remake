@@ -10,13 +10,14 @@ var max_speed_reverse = 250
 var slip_speed = 400
 var traction_fast = 2.5
 var traction_slow = 10
+var isReversing = false
 
 var acceleration = Vector2.ZERO
 var steer_direction
 
 func _physics_process(delta):
 	acceleration = Vector2.ZERO
-	get_input()
+	get_input_direcitonal_with_reverse()
 	apply_friction(delta)
 	calculate_steering(delta)
 	velocity += acceleration * delta
@@ -29,6 +30,24 @@ func apply_friction(delta):
 	var drag_force = velocity * velocity.length() * drag * delta
 	acceleration += drag_force + friction_force
 	
+	
+func get_input_direcitonal_with_reverse():
+	var turn = 0
+	var input_direction = Input.get_vector("left","right","up","down")
+	turn = transform.x.cross(input_direction)
+	steer_direction = turn * deg_to_rad(steering_angle)
+	if input_direction.length() != 0:
+		if isReversing:
+			acceleration = transform.x * -engine_power
+		else:
+			acceleration = transform.x * engine_power
+	if Input.is_action_pressed("b1"):
+		print("is braking")
+		acceleration = transform.x * braking
+	if Input.is_action_just_pressed("r1"):
+		isReversing = !isReversing
+		print("is reversing: " + str(isReversing))
+		
 func get_input():
 	var turn = Input.get_axis("steer_left", "steer_right")
 	steer_direction = turn * deg_to_rad(steering_angle)

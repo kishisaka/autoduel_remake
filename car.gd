@@ -1,5 +1,7 @@
 extends CharacterBody2D
 
+var projectile_scene = preload("res://projectile.tscn")
+
 var wheel_base = 70
 var steering_angle = 15
 var engine_power = 900
@@ -11,6 +13,7 @@ var slip_speed = 400
 var traction_fast = 2.5
 var traction_slow = 10
 var isReversing = false
+var isFiring = false
 
 var acceleration = Vector2.ZERO
 var steer_direction
@@ -18,6 +21,7 @@ var steer_direction
 func _physics_process(delta):
 	acceleration = Vector2.ZERO
 	get_input_direcitonal_with_reverse()
+	fireGun()
 	apply_friction(delta)
 	calculate_steering(delta)
 	velocity += acceleration * delta
@@ -30,6 +34,9 @@ func apply_friction(delta):
 	var drag_force = velocity * velocity.length() * drag * delta
 	acceleration += drag_force + friction_force
 	
+func fireGun():
+	if isFiring:
+		fire_gun()
 	
 func get_input_direcitonal_with_reverse():
 	var turn = 0
@@ -47,7 +54,19 @@ func get_input_direcitonal_with_reverse():
 	if Input.is_action_just_pressed("r1"):
 		isReversing = !isReversing
 		print("is reversing: " + str(isReversing))
+	if Input.is_action_just_released("fire"):
+		isFiring = false
+	if Input.is_action_just_pressed("fire"):
+		isFiring = true
 		
+func fire_gun():
+	var projectile = projectile_scene.instantiate()
+	# Spawn projectile offset from car to avoid immediate collision
+	projectile.position = position + transform.x * 80
+	projectile.direction = transform.x
+	projectile.shooter = self
+	get_parent().add_child(projectile)
+	
 func get_input():
 	var turn = Input.get_axis("steer_left", "steer_right")
 	steer_direction = turn * deg_to_rad(steering_angle)

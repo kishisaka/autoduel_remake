@@ -1,10 +1,14 @@
 extends CharacterBody2D
 
+enum states { PATROL, CHASE, ATTACK, DEAD }
+var state = states.CHASE
+@export var player: CharacterBody2D
+
 var projectile_scene = preload("res://projectile.tscn")
 
 var wheel_base = 70
-var steering_angle = 15
-var engine_power = 900
+var steering_angle = 30
+var engine_power = 300
 var friction = -55
 var drag = -0.06
 var braking = -450
@@ -20,12 +24,16 @@ var steer_direction
 
 func _physics_process(delta):
 	acceleration = Vector2.ZERO
-	get_input_direcitonal_with_reverse()
-	fireGun()
-	apply_friction(delta)
-	calculate_steering(delta)
-	velocity += acceleration * delta
-	move_and_slide()
+	if player != null:
+		get_player_direction()
+		"""
+		get_input_direcitonal_with_reverse()
+		fireGun()
+		"""
+		apply_friction(delta)
+		calculate_steering(delta)
+		velocity += acceleration * delta
+		move_and_slide()
 	
 func apply_friction(delta):
 	if acceleration == Vector2.ZERO and velocity.length() < 50:
@@ -38,11 +46,19 @@ func fireGun():
 	if isFiring:
 		fire_gun()
 	
+func get_player_direction():
+	var turn = 0 
+	"""
+	print("Enemy turn = ", self.global_position.angle_to(self.global_position.direction_to(player.global_position)))
+	"""
+	turn = self.transform.x.angle_to(self.global_position.direction_to(player.global_position))
+	steer_direction = turn * deg_to_rad(steering_angle)
+	acceleration = transform.x * engine_power
+
 func get_input_direcitonal_with_reverse():
 	var turn = 0
 	var input_direction = Input.get_vector("left","right","up","down")
 	turn = transform.x.cross(input_direction)
-	print("player turn = ", turn)
 	steer_direction = turn * deg_to_rad(steering_angle)
 	if input_direction.length() != 0:
 		if isReversing:

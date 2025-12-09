@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://b774kep7xoxeh"]
+[gd_scene load_steps=7 format=3 uid="uid://b774kep7xoxeh"]
 
 [ext_resource type="Texture2D" uid="uid://bqbuxmtvcd2rw" path="res://assets/spritesheet_tiles.png" id="1_0xnb0"]
 [ext_resource type="PackedScene" uid="uid://b62yrnpdtxpxm" path="res://car.tscn" id="2_aokqd"]
 [ext_resource type="PackedScene" uid="uid://ba3jr8n5jcli2" path="res://control_panel.tscn" id="3_04neh"]
+[ext_resource type="PackedScene" uid="uid://dldxgg7kk5qqc" path="res://enemy.tscn" id="4_1bvp3"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_2hygs"]
 texture = ExtResource("1_0xnb0")
@@ -360,3 +361,7 @@ position = Vector2(563, 512)
 
 [node name="ControlPanel" parent="CanvasLayer" instance=ExtResource("3_04neh")]
 player_path = NodePath("../../Car")
+
+[node name="Enemy" parent="." node_paths=PackedStringArray("player") instance=ExtResource("4_1bvp3")]
+position = Vector2(1401, 947)
+player = NodePath("../Car")

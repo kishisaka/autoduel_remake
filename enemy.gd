@@ -25,16 +25,22 @@ var steer_direction
 
 func _physics_process(delta):
 	acceleration = Vector2.ZERO
-	if player != null:
-		get_player_direction()
-		"""
-		get_input_direcitonal_with_reverse()
-		fireGun()
-		"""
-		apply_friction(delta)
-		calculate_steering(delta)
+	match state:
+		states.PATROL:
+			do_patrol(delta)
+		states.CHASE:
+			do_chase(delta)
 	velocity += acceleration * delta
 	move_and_slide()
+
+func do_chase(delta):
+	if player != null:
+		get_player_direction()
+		apply_friction(delta)
+		calculate_steering(delta)
+
+func do_patrol(delta):
+	pass
 	
 func apply_friction(delta):
 	if acceleration == Vector2.ZERO and velocity.length() < 50:

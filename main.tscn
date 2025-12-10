@@ -10,6 +10,7 @@ texture = ExtResource("1_0xnb0")
 separation = Vector2i(2, 2)
 texture_region_size = Vector2i(128, 128)
 0:0/0 = 0
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-64, -64, 64, -64, 64, 64, -64, 64)
 1:0/0 = 0
 2:0/0 = 0
 3:0/0 = 0
@@ -68,7 +69,7 @@ texture_region_size = Vector2i(128, 128)
 12:2/0 = 0
 13:2/0 = 0
 14:2/0 = 0
-14:2/0/physics_layer_0/polygon_0/points = PackedVector2Array(64, 2.5, 64, 64, -64, 64, -64, 5)
+14:2/0/physics_layer_0/polygon_0/points = PackedVector2Array(-64, 0, 64, 1, 64, 64, -64, 64)
 15:2/0 = 0
 16:2/0 = 0
 17:2/0 = 0
@@ -135,6 +136,7 @@ texture_region_size = Vector2i(128, 128)
 12:5/0 = 0
 13:5/0 = 0
 14:5/0 = 0
+14:5/0/physics_layer_0/polygon_0/points = PackedVector2Array(-1, -64, 64, -64, 64, 3, 7, -11)
 15:5/0 = 0
 16:5/0 = 0
 17:5/0 = 0
@@ -157,7 +159,7 @@ texture_region_size = Vector2i(128, 128)
 12:6/0 = 0
 13:6/0 = 0
 14:6/0 = 0
-14:6/0/physics_layer_0/polygon_0/points = PackedVector2Array(2.5, -64, 64, -64, 64, 64, 5, 64)
+14:6/0/physics_layer_0/polygon_0/points = PackedVector2Array(-1, -64, 64, -64, 64, 64, 8, 64, 3, 64)
 15:6/0 = 0
 16:6/0 = 0
 17:6/0 = 0
@@ -202,7 +204,7 @@ texture_region_size = Vector2i(128, 128)
 12:8/0 = 0
 13:8/0 = 0
 14:8/0 = 0
-14:8/0/physics_layer_0/polygon_0/points = PackedVector2Array(-2.5, -64, -64, -64, -64, 64, -5, 64)
+14:8/0/physics_layer_0/polygon_0/points = PackedVector2Array(-64, -64, -1, -64, -1, 64, -64, 64)
 15:8/0 = 0
 16:8/0 = 0
 17:8/0 = 0
@@ -312,7 +314,7 @@ texture_region_size = Vector2i(128, 128)
 11:13/0 = 0
 12:13/0 = 0
 13:13/0 = 0
-13:13/0/physics_layer_0/polygon_0/points = PackedVector2Array(64, -2.5, 64, -64, -64, -64, -64, -5)
+13:13/0/physics_layer_0/polygon_0/points = PackedVector2Array(-64, -64, 64, -64, 64, 0, -64, 2)
 14:13/0 = 0
 15:13/0 = 0
 16:13/0 = 0
@@ -345,6 +347,7 @@ texture_region_size = Vector2i(128, 128)
 [sub_resource type="TileSet" id="TileSet_leh0c"]
 tile_size = Vector2i(128, 128)
 physics_layer_0/collision_layer = 1
+physics_layer_0/collision_mask = 6
 sources/6 = SubResource("TileSetAtlasSource_2hygs")
 
 [node name="Main" type="Node2D"]
@@ -362,6 +365,5 @@ position = Vector2(563, 512)
 [node name="ControlPanel" parent="CanvasLayer" instance=ExtResource("3_04neh")]
 player_path = NodePath("../../Car")
 
-[node name="Enemy" parent="." node_paths=PackedStringArray("player") instance=ExtResource("4_1bvp3")]
+[node name="Enemy" parent="." instance=ExtResource("4_1bvp3")]
 position = Vector2(1401, 947)
-player = NodePath("../Car")

@@ -1,8 +1,9 @@
 extends CharacterBody2D
 
 enum states { PATROL, CHASE, ATTACK, DEAD }
-var state = states.CHASE
-@export var player: CharacterBody2D
+var state = states.PATROL
+
+var player = null
 
 var projectile_scene = preload("res://projectile.tscn")
 
@@ -32,8 +33,8 @@ func _physics_process(delta):
 		"""
 		apply_friction(delta)
 		calculate_steering(delta)
-		velocity += acceleration * delta
-		move_and_slide()
+	velocity += acceleration * delta
+	move_and_slide()
 	
 func apply_friction(delta):
 	if acceleration == Vector2.ZERO and velocity.length() < 50:
@@ -108,3 +109,14 @@ func calculate_steering(delta):
 		velocity = -new_heading * min(velocity.length(), max_speed_reverse)
 #	velocity = new_heading * velocity.length()
 	rotation = new_heading.angle()
+
+
+func _on_area_2d_body_entered(body: Node2D) -> void:
+	player = body
+	state = states.CHASE
+
+
+func _on_area_2d_body_exited(body: Node2D) -> void:
+	player = null
+	state = states.PATROL
+	

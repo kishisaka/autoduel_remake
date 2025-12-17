@@ -1,9 +1,12 @@
 extends CharacterBody2D
 
+@onready var navigation_agent_2d: NavigationAgent2D = $NavigationAgent2D
+
 enum states { PATROL, CHASE, ATTACK, DEAD }
 var state = states.PATROL
 
-var player = null
+var player: CharacterBody2D = null
+@export var patrol_path: Path2D
 
 var projectile_scene = preload("res://projectile.tscn")
 
@@ -23,6 +26,22 @@ var isFiring = false
 var acceleration = Vector2.ZERO
 var steer_direction
 
+var waypoints: PackedVector2Array
+var current_waypoint_idx: int = 0
+
+func _ready():
+	if patrol_path:
+		# Use get_baked_points() for a smooth set of points along the curve
+		waypoints = patrol_path.curve.get_baked_points()
+		# Convert local path points to global positions
+		for i in range(waypoints.size()):
+			waypoints[i] = patrol_path.to_global(waypoints[i])
+		_set_next_waypoint()
+
+func _set_next_waypoint():
+	if waypoints.size() > 0:
+		navigation_agent_2d.target_position = waypoints[current_waypoint_idx]
+
 func _physics_process(delta):
 	acceleration = Vector2.ZERO
 	match state:
@@ -40,7 +59,10 @@ func do_chase(delta):
 		calculate_steering(delta)
 
 func do_patrol(delta):
-	pass
+	if patrol_path != null:
+		get_patrol_direction()
+		apply_friction(delta)
+		calculate_steering(delta)
 	
 func apply_friction(delta):
 	if acceleration == Vector2.ZERO and velocity.length() < 50:
@@ -52,16 +74,30 @@ func apply_friction(delta):
 func fireGun():
 	if isFiring:
 		fire_gun()
+
+func get_patrol_direction():
+	var turn = 0
+	if navigation_agent_2d.is_navigation_finished():
+		_on_navigation_agent_2d_target_reached()
+		
+	var next_path_position = navigation_agent_2d.get_next_path_position()
+	turn = self.transform.x.angle_to(self.global_position.direction_to(next_path_position))
+	steer_direction = turn * deg_to_rad(steering_angle)
+	acceleration = transform.x * engine_power / 2 
 	
 func get_player_direction():
 	var turn = 0 
 	"""
-	print("Enemy turn = ", self.global_position.angle_to(self.global_position.direction_to(player.global_position)))
-	"""
 	turn = self.transform.x.angle_to(self.global_position.direction_to(player.global_position))
 	steer_direction = turn * deg_to_rad(steering_angle)
 	acceleration = transform.x * engine_power
-
+	"""
+	navigation_agent_2d.target_position = player.global_position
+	var next_path_position = navigation_agent_2d.get_next_path_position()
+	turn = self.transform.x.angle_to(self.global_position.direction_to(next_path_position))
+	steer_direction = turn * deg_to_rad(steering_angle)
+	acceleration = transform.x * engine_power
+	
 func get_input_direcitonal_with_reverse():
 	var turn = 0
 	var input_direction = Input.get_vector("left","right","up","down")
@@ -116,11 +152,16 @@ func calculate_steering(delta):
 #	velocity = new_heading * velocity.length()
 	rotation = new_heading.angle()
 
+func _on_navigation_agent_2d_velocity_computed(safe_velocity: Vector2) -> void:
+	velocity = safe_velocity # Replace with function body.
+
+func _on_navigation_agent_2d_target_reached() -> void:
+	current_waypoint_idx = (current_waypoint_idx + 1) % waypoints.size()
+	_set_next_waypoint() 
 
 func _on_area_2d_body_entered(body: Node2D) -> void:
 	player = body
 	state = states.CHASE
-
 
 func _on_area_2d_body_exited(body: Node2D) -> void:
 	player = null
